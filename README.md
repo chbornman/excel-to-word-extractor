@@ -12,6 +12,7 @@ excel-docx/
 ├── config.py             # Configuration settings
 ├── main.py               # Manual conversion script
 ├── watch_main.py         # File watcher script
+├── requirements.txt      # Python package dependencies
 └── create_test_data.py   # Generate test Excel files
 ```
 
@@ -35,7 +36,6 @@ excel-docx/
    - [File Watcher Mode](#file-watcher-mode)
 4. [Setting Up Auto-Start Service](#setting-up-auto-start-service)
    - [Windows Task Scheduler](#windows-task-scheduler)
-   - [Linux systemd Service](#linux-systemd-service)
 5. [Examples](#examples)
 6. [Troubleshooting](#troubleshooting)
 
@@ -84,8 +84,19 @@ winget install Python.Python.3
 Once Python is installed, install the required packages:
 
 ```bash
+# Using requirements.txt (recommended)
+pip install -r requirements.txt
+```
+
+Or install packages individually:
+```bash
 # Open Command Prompt or PowerShell as Administrator
-pip install openpyxl python-docx watchdog
+pip install openpyxl python-docx
+```
+
+For the file watcher functionality:
+```bash
+pip install watchdog
 ```
 
 For development/testing, you might also want:
@@ -243,45 +254,6 @@ nssm install ExcelToWordWatcher
 nssm start ExcelToWordWatcher
 ```
 
-### Linux systemd Service
-
-For Linux systems using systemd:
-
-1. **Create Service File:**
-```bash
-sudo nano /etc/systemd/system/excel-to-word-watcher.service
-```
-
-2. **Add Service Configuration:**
-```ini
-[Unit]
-Description=Excel to Word File Watcher
-After=network.target
-
-[Service]
-Type=simple
-User=yourusername
-WorkingDirectory=/path/to/project
-ExecStart=/usr/bin/python3 /path/to/project/watch_main.py
-Restart=always
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target
-```
-
-3. **Enable and Start Service:**
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable excel-to-word-watcher.service
-sudo systemctl start excel-to-word-watcher.service
-```
-
-4. **Check Status:**
-```bash
-sudo systemctl status excel-to-word-watcher.service
-```
-
 ## Examples
 
 ### Example 1: Extract Specific Data Range
@@ -295,7 +267,7 @@ START_ROW = 5
 END_ROW = 25
 START_COL = "B"  # Column B
 END_COL = "G"    # Column G
-OUTPUT_FILE = "q4_sales_summary.docx"
+OUTPUT_FILE = "docx-output/q4_sales_summary.docx"
 ```
 
 Run:
@@ -365,6 +337,22 @@ START_COL = "AA"
 END_COL = "AF"    # Extracts columns AA through AF
 ```
 
+### Example 5: Reprocessing Previously Output Files
+
+If you need to edit data from a previously processed Excel file:
+
+1. **Locate the file** in `excel-data/processed/`
+2. **Edit the Excel file** with your changes
+3. **Move it back** to the main `excel-data/` folder
+4. **Reprocess the file:**
+   - For manual processing: Update `config.py` with the filename and run `python main.py`
+   - For automatic processing: If the watcher is running, it will detect and process automatically
+
+**Note:** The file will be moved back to `processed/` after reprocessing if using the watcher. To edit multiple times, either:
+- Work on a copy of the file
+- Temporarily stop the watcher while editing
+- Use manual processing mode instead
+
 ## Troubleshooting
 
 ### Common Issues
@@ -411,6 +399,11 @@ logging.basicConfig(level=logging.DEBUG,
 - openpyxl (for Excel file reading)
 - python-docx (for Word document creation)
 - watchdog (for file system monitoring)
+
+Install via:
+```bash
+pip install -r requirements.txt
+```
 
 ## License
 
