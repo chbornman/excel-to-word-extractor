@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+.venv
+
+# Virtual environments
+bin/
+lib/
+lib64/
+include/
+pyvenv.cfg
+pip-selfcheck.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Project specific
+excel-data/processed/
+docx-output/*.docx
+*.xlsx
+*.xls
+*.xlsm
+!excel-data/data.xlsx
+
+# Temporary files
+~$*
+.~lock.*
+
+# Logs
+*.log
