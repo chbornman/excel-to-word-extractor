@@ -225,10 +225,16 @@ def validate_config():
     except (AttributeError, ValueError):
         errors.append("START_COL and END_COL must be valid column letters (A, B, C, etc.)")
     
-    # Check output file path
+    # Check output file path and create directory if needed
     output_dir = os.path.dirname(config.OUTPUT_FILE) or '.'
-    if not os.path.exists(output_dir):
-        errors.append(f"Output directory '{output_dir}' does not exist")
+    if output_dir != '.' and not os.path.exists(output_dir):
+        try:
+            os.makedirs(output_dir)
+            print(f"✓ Created output directory: {output_dir}")
+        except PermissionError:
+            errors.append(f"Permission denied to create output directory '{output_dir}'")
+        except Exception as e:
+            errors.append(f"Failed to create output directory '{output_dir}': {str(e)}")
     
     if errors:
         print("Configuration errors:")
